@@ -1,0 +1,35 @@
+#include <algorithm>
+#include <vector>
+#include <iostream>
+#include <string>
+#include <set>
+#include <sstream>
+void strip(std::string& s, char x){
+    s.erase(std::remove_if(s.begin(),
+                           s.end(),
+                           [&](auto c){return c==x;}),
+            s.end());
+}
+int main() {
+    std::set<std::string> parsed_emails;
+    std::vector<std::string> emails{"A.B+.C.D@gmail.com", "norm@yahoo.com", "norm+1@yahoo.com",
+                                    "AB@gmail.com"};
+    for(auto email : emails) {
+        std::string local;
+        std::string domain;
+        auto at = std::find(email.begin(), email.end(), '@');
+        if (at != email.end()) {
+            local = std::string(email.begin(), at);
+            strip(local, '.');
+            domain = std::string(at + 1, email.end());
+        }
+        auto ignore = std::find(local.begin(), local.end(), '+');
+        if (ignore != local.end()) {
+            local = std::string(local.begin(), ignore);
+        }
+        std::string parsed_email{local + '@' + domain};
+        parsed_emails.insert(parsed_email);
+    }
+    std::cout << parsed_emails.size();
+    return 0;
+}
